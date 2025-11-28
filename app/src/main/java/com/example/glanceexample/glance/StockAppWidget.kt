@@ -14,6 +14,7 @@ import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalSize
+import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.cornerRadius
@@ -63,25 +64,10 @@ class StockAppWidget: GlanceAppWidget() {
         }
     }
 
-    @Composable
-    private fun Medium(stateCount: Float) {
-        Column(horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
-            modifier = GlanceModifier
-                .fillMaxSize()
-                .cornerRadius(15.dp)
-                .background(GlanceTheme.colors.background)
-                .padding(8.dp)) {
-            StockDisplay(stateCount)
-            Image(
-                provider = ImageProvider(if (PriceDataRepo.change > 0)
-                    R.drawable.up_arrow else R.drawable.down_arrow),
-                contentDescription = "Arrow Image",
-                modifier = GlanceModifier
-                    .fillMaxSize()
-                    .padding(20.dp)
-            )
-        }
+    private fun refreshPrice() {
+        PriceDataRepo.update()
     }
+
 
     @Composable
     private fun StockDisplay(stateCount: Float) {
@@ -128,8 +114,30 @@ class StockAppWidget: GlanceAppWidget() {
     }
 
     @Composable
+    private fun Medium(stateCount: Float) {
+        Column(horizontalAlignment = Alignment.Horizontal.CenterHorizontally,
+            modifier = GlanceModifier
+                .fillMaxSize()
+                .cornerRadius(15.dp)
+                .background(GlanceTheme.colors.background)
+                .padding(8.dp)) {
+            StockDisplay(stateCount)
+            Image(
+                provider = ImageProvider(if (PriceDataRepo.change > 0)
+                    R.drawable.up_arrow else R.drawable.down_arrow),
+                contentDescription = "Arrow Image",
+                modifier = GlanceModifier
+                    .clickable { refreshPrice() }
+                    .fillMaxSize()
+                    .padding(20.dp)
+            )
+        }
+    }
+
+    @Composable
     private fun Small(stateCount: Float) {
         Column(modifier = GlanceModifier
+            .clickable { refreshPrice() }
             .fillMaxSize()
             .background(GlanceTheme.colors.background)
             .padding(8.dp)) {
